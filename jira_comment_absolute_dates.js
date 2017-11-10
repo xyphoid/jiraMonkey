@@ -2,7 +2,7 @@
 // @name         JIRA Comment Absolute Dates
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Don't use "2 days ago" etc in comment headers.
+// @description  Don't use "2 days ago" etc in comment headers. Move comments up above activity box.
 // @author       sweavo@gmail.com
 // @include      /^https?:\/\/[^/]*\/browse\//
 // @grant        none
@@ -36,14 +36,25 @@ function patch_absolute_dates( )
          */
         if ( ! begins( displayed, absolute ) )
         {
-            prepend( stampContainer, document.createTextNode( absolute + ": " ) );
+            prepend( stampContainer, document.createTextNode( absolute + " - " ) );
+            //stampContainer.insertBefore( document.createTextNode( "]" ), stampContainer.childNodes[0].nextSibling );
         }
     }
     if ( JCAT_LOG_TO_CONSOLE ) console.log('patch_absolute_dates done');
+}
+
+function move_comments_box()  {
+
+    var container = document.getElementsByClassName( 'issue-main-column' )[0];
+    var comments = document.querySelector ("#addcomment");
+    var activity = document.querySelector ("#activitymodule");
+
+    container.insertBefore(comments,activity);
 }
 
 (function() {
     'use strict';
     setInterval( patch_absolute_dates, 2000 );
     patch_absolute_dates();
+    move_comments_box();
 })();
